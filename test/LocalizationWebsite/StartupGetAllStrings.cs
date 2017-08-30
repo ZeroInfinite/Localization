@@ -1,9 +1,9 @@
-// Copyright (c) .NET Foundation. All rights reserved.
+﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
+using System.Linq;
 using LocalizationWebsite.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,11 +11,10 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace LocalizationWebsite
 {
-    public class StartupResourcesInFolder
+    public class StartupGetAllStrings
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -25,12 +24,7 @@ namespace LocalizationWebsite
         public void Configure(
             IApplicationBuilder app,
             ILoggerFactory loggerFactory,
-            IStringLocalizerFactory stringLocalizerFactory,
-            IStringLocalizer<StartupResourcesInFolder> startupStringLocalizer,
-            IStringLocalizer<Customer> custromerStringLocalizer,
-            // This localizer is used in tests to prevent a regression of https://github.com/aspnet/Localization/issues/293
-            // Namely that english was always being returned if it existed.
-            IStringLocalizer<StartupCustomCulturePreserved> customCultureLocalizer)
+            IStringLocalizer<Customer> customerStringLocalizer)
         {
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
@@ -45,18 +39,13 @@ namespace LocalizationWebsite
                 }
             });
 
-            var assemblyName = typeof(StartupResourcesInFolder).GetTypeInfo().Assembly.GetName().Name;
-            var stringLocalizer = stringLocalizerFactory.Create("Test", assemblyName);
-
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync(startupStringLocalizer["Hello"]);
+                var strings = customerStringLocalizer.GetAllStrings();
+
+                await context.Response.WriteAsync(strings.Count().ToString());
                 await context.Response.WriteAsync(" ");
-                await context.Response.WriteAsync(stringLocalizer["Hello"]);
-                await context.Response.WriteAsync(" ");
-                await context.Response.WriteAsync(custromerStringLocalizer["Hello"]);
-                await context.Response.WriteAsync(" ");
-                await context.Response.WriteAsync(customCultureLocalizer["Hello"]);
+                await context.Response.WriteAsync(string.Join(" ", strings));
             });
         }
     }
