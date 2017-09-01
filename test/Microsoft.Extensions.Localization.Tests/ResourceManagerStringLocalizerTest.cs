@@ -197,7 +197,6 @@ namespace Microsoft.Extensions.Localization
                 localizer.GetAllStrings(includeParentCultures).ToArray();
             });
 
-
             var expectedTries = includeParentCultures ? 3 : 1;
             var expected = includeParentCultures
                 ? "No manifests exist for the current culture."

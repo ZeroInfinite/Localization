@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace LocalizationWebsite
 {
